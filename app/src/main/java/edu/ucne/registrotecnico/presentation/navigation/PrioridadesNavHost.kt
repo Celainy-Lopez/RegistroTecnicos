@@ -8,13 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
-import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoScreen
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
 
 
 @Composable
