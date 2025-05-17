@@ -77,7 +77,6 @@ private fun PrioridadRow(
             .padding(vertical = 4.dp)
     ) {
 
-        val decimalFormat = DecimalFormat("#,##0.00")
         Text(modifier = Modifier.weight(1f), text = prioridad.prioridadId.toString())
         Text(modifier = Modifier.weight(2f), text = prioridad.descripcion)
 
