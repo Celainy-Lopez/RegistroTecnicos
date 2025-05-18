@@ -11,41 +11,57 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
+import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,13 +70,14 @@ fun TicketScreen(
     ticketId: Int? = null,
     viewModel: TicketsViewModel,
     navController: NavController,
+    function: () -> Boolean,
 ) {
     var fecha by remember { mutableStateOf(Date()) }
-    var prioridadId: Int by remember { mutableIntStateOf(1) }
+    var prioridadId: Int by remember { mutableIntStateOf(0) }
     var cliente by remember { mutableStateOf("") }
     var asunto by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
-    var tecnicoId: Int by remember { mutableIntStateOf(1) }
+    var tecnicoId: Int by remember { mutableIntStateOf(0) }
     var errorMessage: String? by remember { mutableStateOf(null) }
     var existe by remember { mutableStateOf<TicketEntity?>(null) }
     var expandidoPrioridad by remember { mutableStateOf(false) }
@@ -113,14 +130,18 @@ fun TicketScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    Text(
-                        text = "Registro Ticket",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "Registro Tickets",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        })
 
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
@@ -132,40 +153,30 @@ fun TicketScreen(
                         enabled = false
                     )
 
-                    val state = rememberDatePickerState(initialDisplayMode = DisplayMode.Input)
-                    DatePicker(state = state, modifier = Modifier.padding(16.dp))
-
-                    Text(
-                        "Entered date timestamp: ${state.selectedDateMillis ?: "no input"}",
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    DialogoFecha(
+                        fechaActual = fecha,
+                        onFechaSeleccionada = { nuevaFecha -> fecha = nuevaFecha }
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expandidoPrioridad = true }
+                    ExposedDropdownMenuBox(
+                        expanded = expandidoPrioridad,
+                        onExpandedChange = { expandidoPrioridad = !expandidoPrioridad }
                     ) {
                         OutlinedTextField(
                             value = prioridades.find { it.prioridadId == prioridadId }?.descripcion
                                 ?: "",
                             onValueChange = {},
-                            label = { Text("Prioridad") },
-                            placeholder = { Text("Ej: Alta") },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "opcionesPrioridad"
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth(),
                             readOnly = true,
-                            enabled = false // 🔧 Esto puede ayudar a evitar conflicto de foco
+                            label = { Text("Seleccionar prioridad") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoPrioridad) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
 
-                        DropdownMenu(
+                        ExposedDropdownMenu(
                             expanded = expandidoPrioridad,
-                            onDismissRequest = { expandidoPrioridad = false },
-                            modifier = Modifier.fillMaxWidth()
+                            onDismissRequest = { expandidoPrioridad = false }
                         ) {
                             prioridades.forEach { prioridad ->
                                 DropdownMenuItem(
@@ -178,7 +189,6 @@ fun TicketScreen(
                             }
                         }
                     }
-
 
                     OutlinedTextField(
                         value = cliente,
@@ -207,31 +217,24 @@ fun TicketScreen(
                         singleLine = true
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { expandidoTecnico = true }
+                    ExposedDropdownMenuBox(
+                        expanded = expandidoTecnico,
+                        onExpandedChange = { expandidoTecnico = !expandidoTecnico }
                     ) {
                         OutlinedTextField(
                             value = tecnicos.find { it.tecnicoId == tecnicoId }?.nombres ?: "",
                             onValueChange = {},
-                            label = { Text("Técnico") },
-                            placeholder = { Text("Ej: José Pérez") },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = "opcionesTecnico"
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth(),
                             readOnly = true,
-                            enabled = false
+                            label = { Text("Seleccionar técnico") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoTecnico) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
                         )
 
-                        DropdownMenu(
+                        ExposedDropdownMenu(
                             expanded = expandidoTecnico,
-                            onDismissRequest = { expandidoTecnico = false },
-                            modifier = Modifier.fillMaxWidth()
+                            onDismissRequest = { expandidoTecnico = false }
                         ) {
                             tecnicos.forEach { tecnico ->
                                 DropdownMenuItem(
@@ -244,7 +247,6 @@ fun TicketScreen(
                             }
                         }
                     }
-
 
                     Spacer(modifier = Modifier.padding(2.dp))
                     errorMessage?.let {
@@ -331,3 +333,60 @@ fun TicketScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DialogoFecha(
+    fechaActual: Date,
+    onFechaSeleccionada: (Date) -> Unit
+) {
+    val openDialog = remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
+    val formato = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    OutlinedTextField(
+        value = formato.format(fechaActual),
+        onValueChange = {},
+        label = { Text("Fecha") },
+        trailingIcon = {
+            IconButton(onClick = { openDialog.value = true }) {
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    contentDescription = "Seleccionar fecha"
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth(),
+        readOnly = true,
+    )
+
+    if (openDialog.value) {
+        val confirmEnabled = remember {
+            derivedStateOf { datePickerState.selectedDateMillis != null }
+        }
+
+        DatePickerDialog(
+            onDismissRequest = { openDialog.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            onFechaSeleccionada(Date(millis))
+                        }
+                        openDialog.value = false
+                    },
+                    enabled = confirmEnabled.value
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { openDialog.value = false }) {
+                    Text("Cancelar")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
