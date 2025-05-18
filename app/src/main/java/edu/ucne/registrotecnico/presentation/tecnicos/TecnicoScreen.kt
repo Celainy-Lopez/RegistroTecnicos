@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,11 +41,13 @@ import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import java.text.DecimalFormat
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TecnicoScreen(
     tecnicoId: Int? = null,
     viewModel: TecnicosViewModel,
     navController: NavController,
+    function: () -> Boolean,
 ) {
     var nombres by remember { mutableStateOf("") }
     var sueldo by remember { mutableDoubleStateOf(0.0) }
@@ -90,15 +94,18 @@ fun TecnicoScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    Text(
-                        text = "Registro técnico",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "Registro Técnicos",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     )
-
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
                         value = tecnicoId.toString() ?: "0",

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,11 +37,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrioridadScreen(
     prioridadId: Int? = null,
     viewModel: PrioridadesViewModel,
     navController: NavController,
+    function: () -> Boolean,
 ) {
     var descripcion by remember { mutableStateOf("") }
     var errorMessage: String? by remember { mutableStateOf(null) }
@@ -84,13 +88,17 @@ fun PrioridadScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    Text(
-                        text = "Registro prioridad",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "Registro Prioridad",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))
