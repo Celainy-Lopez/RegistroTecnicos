@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -53,11 +57,26 @@ fun TecnicoListScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(modifier = Modifier.weight(1f), text = "ID")
+                Text(modifier = Modifier.weight(1f), text = "Nombre")
+                Text(modifier = Modifier.weight(1f), text = "Sueldo")
+                Text(modifier = Modifier.weight(1f), text = "Acciones")
+            }
+
+            HorizontalDivider()
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(tecnicoList) { tecnico ->
-                    TecnicoRow(tecnico, { onEdit(tecnico.tecnicoId) },
+                    TecnicoRow(
+                        tecnico, { onEdit(tecnico.tecnicoId) },
                         { onDelete(tecnico) })
                 }
             }
@@ -71,28 +90,35 @@ private fun TecnicoRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    val decimalFormat = DecimalFormat("#,##0.00")
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(8.dp),
+        elevation = cardElevation(defaultElevation = 6.dp)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
 
-        val decimalFormat = DecimalFormat("#,##0.00")
-        Text(modifier = Modifier.weight(1f), text = tecnico.tecnicoId.toString())
-        Text(modifier = Modifier.weight(2f), text = tecnico.nombres)
-        Text(modifier = Modifier.weight(2f), text = decimalFormat.format(tecnico.sueldo))
+            Text(modifier = Modifier.weight(1f), text = tecnico.tecnicoId.toString())
+            Text(modifier = Modifier.weight(1f), text = tecnico.nombres)
+            Text(modifier = Modifier.weight(1f), text = decimalFormat.format(tecnico.sueldo))
 
-        IconButton(onClick = onEdit) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
+            IconButton(onClick = onEdit) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
+            }
+            IconButton(onClick = onDelete) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
+            }
         }
-        IconButton(onClick = onDelete) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
-        }
+        HorizontalDivider()
     }
-    HorizontalDivider()
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

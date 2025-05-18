@@ -11,6 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -52,11 +54,25 @@ fun PrioridadListScreen(
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(modifier = Modifier.weight(1f), text = "ID")
+                Text(modifier = Modifier.weight(1f), text = "Descripción")
+                Text(modifier = Modifier.weight(1f), text = "Acciones")
+            }
+
+            HorizontalDivider()
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(prioridadList) { prioridad ->
-                    PrioridadRow(prioridad, { onEdit(prioridad.prioridadId) },
+                    PrioridadRow(
+                        prioridad, { onEdit(prioridad.prioridadId) },
                         { onDelete(prioridad) })
                 }
             }
@@ -70,25 +86,34 @@ private fun PrioridadRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(8.dp),
+        elevation = cardElevation(defaultElevation = 6.dp)
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
+            Text(modifier = Modifier.weight(1f), text = prioridad.prioridadId.toString())
+            Text(modifier = Modifier.weight(1f), text = prioridad.descripcion)
 
-        Text(modifier = Modifier.weight(1f), text = prioridad.prioridadId.toString())
-        Text(modifier = Modifier.weight(2f), text = prioridad.descripcion)
-
-        IconButton(onClick = onEdit) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
+            Row(modifier = Modifier.weight(1f)) {
+                IconButton(onClick = onEdit) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
+                }
+            }
         }
-        IconButton(onClick = onDelete) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
-        }
+        HorizontalDivider()
     }
-    HorizontalDivider()
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnico.presentation.tickets
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -20,15 +23,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
-import java.sql.Date
-import java.text.DecimalFormat
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,12 +48,12 @@ fun TicketListScreen(
             }
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(padding)
         ) {
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -73,28 +72,48 @@ private fun TicketRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(8.dp),
+        elevation = cardElevation(6.dp)
     ) {
-        Text(modifier = Modifier.weight(1f), text = ticket.ticketId.toString())
-        Text(modifier = Modifier.weight(1f), text = ticket.fecha.toString().format("dd/mm/yyyy"))
-        Text(modifier = Modifier.weight(1f), text = ticket.prioridadId.toString())
-        Text(modifier = Modifier.weight(1f), text = ticket.cliente)
-        Text(modifier = Modifier.weight(1f), text = ticket.asunto)
-        Text(modifier = Modifier.weight(1f), text = ticket.tecnicoId.toString())
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(text = "Ticket Id: " + ticket.ticketId.toString())
+            Text(text = "Fecha: ${formatDate(ticket.fecha)}")
+            Text(text = "Prioridad: " +   ticket.tecnicoId)
+            Text(text = "Cliente: " +  ticket.cliente)
+            Text(text = "Asunto: " +  ticket.asunto)
+            Text(text = "Descripción : " + ticket.descripcion)
+            Text(text = "Tecnico : " + ticket.tecnicoId.toString())
 
-        IconButton(onClick = onEdit) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
-        }
-        IconButton(onClick = onDelete) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(onClick = onEdit) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
+                }
+            }
+            HorizontalDivider()
         }
     }
-    HorizontalDivider()
 }
+
+fun formatDate(date: java.util.Date): String {
+    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy")
+    return formatter.format(date)
+}
+
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
