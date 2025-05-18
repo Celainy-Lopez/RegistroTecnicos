@@ -42,7 +42,7 @@ fun TecnicosNavHost(
                 tecnicoId,
                 viewModel,
                 navController
-            )
+            ) { navController.popBackStack() }
         }
     }
 }

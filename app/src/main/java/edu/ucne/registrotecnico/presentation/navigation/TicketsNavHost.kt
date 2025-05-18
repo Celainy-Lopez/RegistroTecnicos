@@ -43,7 +43,7 @@ fun TicketsNavHost(
                 ticketId,
                 viewModel,
                 navController,
-            )
+            ) { navController.popBackStack() }
         }
     }
 }

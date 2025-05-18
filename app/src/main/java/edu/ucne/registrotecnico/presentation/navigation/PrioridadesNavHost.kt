@@ -42,7 +42,7 @@ fun PrioridadesNavHost(
                 prioridadId,
                 viewModel,
                 navController
-            )
+            ) { navController.popBackStack() }
         }
     }
 }
