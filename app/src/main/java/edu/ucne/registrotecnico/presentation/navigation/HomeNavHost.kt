@@ -7,6 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.toRoute
+import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
+import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
+import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
@@ -23,7 +26,10 @@ fun HomeNavHost(
     navController: NavHostController,
     prioridadesViewModel: PrioridadesViewModel,
     tecnicosViewModel: TecnicosViewModel,
-    ticketsViewModel: TicketsViewModel
+    ticketsViewModel: TicketsViewModel,
+    prioridadList: List<PrioridadEntity>,
+    ticketList: List<TicketEntity>,
+    tecnicoList: List<TecnicoEntity>
 ) {
     NavHost(
         navController = navController,
