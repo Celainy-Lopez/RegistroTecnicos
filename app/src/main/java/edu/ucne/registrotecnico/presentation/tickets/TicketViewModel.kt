@@ -2,6 +2,7 @@ package edu.ucne.registrotecnico.presentation.tickets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.data.repository.PrioridadesRepository
 import edu.ucne.registrotecnico.data.repository.TecnicosRepository
@@ -22,7 +23,7 @@ class TicketsViewModel(
 
 ): ViewModel() {
     private val ticketList = MutableStateFlow<List<TicketEntity>>(emptyList())
-    val tickets: StateFlow<List<TicketEntity>> = ticketList.asStateFlow()
+    val ticketsS: StateFlow<List<TicketEntity>> = ticketList.asStateFlow()
 
     val getPrioridades = prioridadesRepository.getAll()
         .stateIn(
@@ -65,5 +66,12 @@ class TicketsViewModel(
             ticketsRepository.delete(ticket)
         }
     }
+
+    val tickets: StateFlow<List<TicketEntity>> = ticketsRepository.getAll()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
 }
