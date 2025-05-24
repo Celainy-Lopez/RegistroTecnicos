@@ -24,61 +24,68 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+
+@Composable
+fun PrioridadScreen(
+    viewModel: PrioridadesViewModel = hiltViewModel(),
+    prioridadId: Int?,
+    goBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    PrioridadBodyScreen(
+        uiState = uiState,
+        viewModel::onEvent,
+        goBack = goBack
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrioridadScreen(
-    prioridadId: Int? = null,
-    viewModel: PrioridadesViewModel,
-    navController: NavController,
-    function: () -> Boolean,
-) {
-    var descripcion by remember { mutableStateOf("") }
-    var errorMessage: String? by remember { mutableStateOf(null) }
-    var existe by remember { mutableStateOf<PrioridadEntity?>(null) }
-
-    LaunchedEffect(prioridadId) {
-        if (prioridadId != null && prioridadId > 0) {
-            val prioridad = viewModel.findPrioridad(prioridadId)
-            prioridad?.let {
-                existe = it
-                descripcion = it.descripcion
-            }
+fun PrioridadBodyScreen(
+    uiState: PrioridadUiState,
+    onEvent: (PrioridadEvent) -> Unit,
+    goBack: () -> Unit
+){
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Registro Prioridades",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = goBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
+            )
         }
-    }
-
-    Scaffold { innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(8.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (navController != null) {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "volver")
-                    }
-                }
-            }
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -88,22 +95,9 @@ fun PrioridadScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                "Registro Prioridad",
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    )
-
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
-                        value = prioridadId.toString() ?: "0",
+                        value = uiState.prioridadId.toString() ?: "0",
                         onValueChange = {},
                         label = { Text("ID") },
                         modifier = Modifier.fillMaxWidth(),
@@ -112,8 +106,8 @@ fun PrioridadScreen(
                     )
 
                     OutlinedTextField(
-                        value = descripcion,
-                        onValueChange = { descripcion = it },
+                        value = uiState.descripcion,
+                        onValueChange = { onEvent(PrioridadEvent.DescripcionChange(it)) },
                         label = { Text("Descripción") },
                         placeholder = { Text("Ej: Alta") },
                         modifier = Modifier.fillMaxWidth(),
@@ -121,7 +115,7 @@ fun PrioridadScreen(
                     )
 
                     Spacer(modifier = Modifier.padding(2.dp))
-                    errorMessage?.let {
+                    uiState.errorMessage?.let {
                         Text(text = it, color = Color.Red)
                     }
                     Row(
@@ -130,8 +124,7 @@ fun PrioridadScreen(
                     ) {
                         OutlinedButton(
                             onClick = {
-                                descripcion = ""
-                                errorMessage = null
+                                onEvent(PrioridadEvent.New)
                             }
                         ) {
                             Icon(
@@ -142,19 +135,12 @@ fun PrioridadScreen(
                         }
                         Spacer(modifier = Modifier.width(8.dp))
 
+                        val scope = rememberCoroutineScope()
+
                         OutlinedButton(
                             onClick = {
-                                if (descripcion.isBlank()) {
-                                    errorMessage = "Descripción vacia."
-                                    return@OutlinedButton
-                                }
-
-                                viewModel.savePrioridad(
-                                    PrioridadEntity(
-                                        prioridadId = existe?.prioridadId,
-                                        descripcion = descripcion,
-                                    )
-                                )
+                                onEvent(PrioridadEvent.Save)
+                                goBack()
                             }
                         )
 
@@ -170,5 +156,6 @@ fun PrioridadScreen(
             }
         }
     }
+
 }
 

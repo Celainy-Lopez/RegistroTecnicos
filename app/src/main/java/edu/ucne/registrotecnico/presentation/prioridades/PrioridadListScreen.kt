@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnico.presentation.prioridades
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,16 +27,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
 import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
-import java.text.DecimalFormat
+import androidx.compose.runtime.getValue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrioridadListScreen(
-    prioridadList: List<PrioridadEntity>,
-    onEdit: (Int?) -> Unit,
-    onDelete: (PrioridadEntity) -> Unit
+    viewModel: PrioridadesViewModel = hiltViewModel(),
+    goToPrioridad: (Int) -> Unit,
+    createPrioridad: () -> Unit,
+    deletePrioridad: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    PrioridadListBodyScreen(
+        uiState,
+        goToPrioridad,
+        createPrioridad,
+        deletePrioridad
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PrioridadListBodyScreen(
+    uiState: PrioridadUiState,
+    goToPrioridad: (Int) -> Unit,
+    createPrioridad: () -> Unit,
+    deletePrioridad: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -43,16 +66,16 @@ fun PrioridadListScreen(
                 title = { Text("Lista de prioridades") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEdit(0) }) {
+            FloatingActionButton(onClick = createPrioridad) {
                 Icon(Icons.Filled.Add, "Agregar nueva")
             }
         }
-    ) { padding ->
+    ) { innerPadding ->
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(padding)
+                .padding(innerPadding)
         ) {
             Row(
                 modifier = Modifier
@@ -70,10 +93,13 @@ fun PrioridadListScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(prioridadList) { prioridad ->
+                items(uiState.prioridades) {
                     PrioridadRow(
-                        prioridad, { onEdit(prioridad.prioridadId) },
-                        { onDelete(prioridad) })
+                        it,
+                        goToPrioridad,
+                        createPrioridad,
+                        deletePrioridad
+                    )
                 }
             }
         }
@@ -82,9 +108,10 @@ fun PrioridadListScreen(
 
 @Composable
 private fun PrioridadRow(
-    prioridad: PrioridadEntity,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    it: PrioridadEntity,
+    goToPrioridad: (Int) -> Unit,
+    createPrioridad: () -> Unit,
+    deletePrioridad: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -97,15 +124,18 @@ private fun PrioridadRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)
+                .clickable{
+                    goToPrioridad(it.prioridadId?: 0)
+                }
         ) {
-            Text(modifier = Modifier.weight(1f), text = prioridad.prioridadId.toString())
-            Text(modifier = Modifier.weight(1f), text = prioridad.descripcion)
+            Text(modifier = Modifier.weight(1f), text = it.prioridadId.toString())
+            Text(modifier = Modifier.weight(1f), text = it.descripcion)
 
             Row(modifier = Modifier.weight(1f)) {
-                IconButton(onClick = onEdit) {
+                IconButton(onClick = createPrioridad) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                 }
-                IconButton(onClick = onDelete) {
+                IconButton(onClick = deletePrioridad) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
                 }
             }
@@ -130,9 +160,10 @@ private fun Preview() {
     )
     RegistroTecnicoTheme {
         PrioridadListScreen(
-            prioridadList = prioridades,
-            onEdit = {},
-            onDelete = {}
+            goToPrioridad = {},
+            createPrioridad = {},
+            deletePrioridad = {}
+
         )
     }
 }

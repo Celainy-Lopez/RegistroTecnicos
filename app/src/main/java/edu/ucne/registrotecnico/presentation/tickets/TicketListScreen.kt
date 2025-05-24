@@ -1,5 +1,6 @@
 package edu.ucne.registrotecnico.presentation.tickets
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,51 +27,78 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
+import androidx.compose.runtime.getValue
 
+@Composable
+fun TicketListScreen(
+    viewModel: TicketsViewModel = hiltViewModel(),
+    goToTicket: (Int) -> Unit,
+    createTicket: () -> Unit,
+    deleteTicket: () -> Unit
+) {
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TicketListBodyScreen(
+      uiState,
+        goToTicket,
+        createTicket,
+        deleteTicket
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketListScreen(
-    ticketList: List<TicketEntity>,
-    onEdit: (Int?) -> Unit,
-    onDelete: (TicketEntity) -> Unit
-) {
+fun TicketListBodyScreen(
+    uiState: TicketUiState,
+    goToTicket: (Int) -> Unit,
+    createTicket: () -> Unit,
+    deleteTicket: () -> Unit
+){
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Lista de Tickets") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onEdit(0) }) {
+            FloatingActionButton(onClick = createTicket) {
                 Icon(Icons.Filled.Add, "Agregar nueva")
             }
         }
-    ) { padding ->
+    ) { InnerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(padding)
+                .padding(InnerPadding)
         ) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(ticketList) { ticket ->
-                    TicketRow(ticket, { onEdit(ticket.ticketId) },
-                        { onDelete(ticket) })
+                items(uiState.tickets) {
+                    TicketRow(
+                        it,
+                        goToTicket,
+                        createTicket,
+                        deleteTicket
+                    )
                 }
             }
         }
     }
 }
 
+
+
 @Composable
 private fun TicketRow(
-    ticket: TicketEntity,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    it: TicketEntity,
+    goToTicket: (Int) -> Unit,
+    createTicket: () -> Unit,
+    deleteTicket: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -81,14 +109,17 @@ private fun TicketRow(
         Column(
             modifier = Modifier
                 .padding(16.dp)
+                .clickable{
+                    goToTicket(it.ticketId?: 0)
+                }
         ) {
-            Text(text = "Ticket Id: " + ticket.ticketId.toString())
-            Text(text = "Fecha: ${formatDate(ticket.fecha)}")
-            Text(text = "Prioridad: " +   ticket.tecnicoId)
-            Text(text = "Cliente: " +  ticket.cliente)
-            Text(text = "Asunto: " +  ticket.asunto)
-            Text(text = "Descripción : " + ticket.descripcion)
-            Text(text = "Tecnico : " + ticket.tecnicoId.toString())
+            Text(text = "Ticket Id: " + it.ticketId.toString())
+            Text(text = "Fecha: ${formatDate(it.fecha)}")
+            Text(text = "Prioridad: " +   it.tecnicoId)
+            Text(text = "Cliente: " +  it.cliente)
+            Text(text = "Asunto: " +  it.asunto)
+            Text(text = "Descripción : " + it.descripcion)
+            Text(text = "Tecnico : " + it.tecnicoId.toString())
 
             Row(
                 modifier = Modifier
@@ -96,10 +127,10 @@ private fun TicketRow(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = onEdit) {
+                IconButton(onClick = createTicket) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                 }
-                IconButton(onClick = onDelete) {
+                IconButton(onClick = deleteTicket) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
                 }
             }
@@ -139,9 +170,9 @@ private fun TicketListPreview() {
 
     RegistroTecnicoTheme {
         TicketListScreen(
-            ticketList = tickets,
-            onEdit = {},
-            onDelete = {}
+            goToTicket = {},
+            createTicket = {},
+            deleteTicket = {},
         )
     }
 }
