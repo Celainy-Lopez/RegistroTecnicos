@@ -1,15 +1,39 @@
 package edu.ucne.registrotecnico.presentation
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.EaseInOutSine
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LowPriority
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -17,119 +41,24 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.*
-import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
+import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnico.data.local.entities.TicketEntity
-import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
-import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
+import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
+import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
+import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
 
-sealed class BottomNavItem(
-    val route: String,
-    val label: String,
-    val icon: ImageVector
-) {
-    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
-    object Tickets : BottomNavItem("tickets", "Tickets", Icons.Default.List)
-    object Tecnicos : BottomNavItem("tecnicos", "Técnicos", Icons.Default.People)
-    object Prioridades : BottomNavItem("prioridades", "Prioridades", Icons.Default.LowPriority)
-}
-
-@Composable
-fun HomeScreen(
-    tickets: List<TicketEntity>,
-    tecnicos: List<TecnicoEntity>,
-    prioridades: List<PrioridadEntity>,
-    onEditTecnico: (Int?) -> Unit,
-    onDeleteTecnico: (TecnicoEntity) -> Unit,
-    onEditPrioridad: (Int?) -> Unit,
-    onDeletePrioridad: (PrioridadEntity) -> Unit,
-    onEditTicket: (Int?) -> Unit,
-    onDeleteTicket: (TicketEntity) -> Unit,
-) {
-    val navController = rememberNavController()
-    val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Tickets,
-        BottomNavItem.Tecnicos,
-        BottomNavItem.Prioridades,
-    )
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-                items.forEach { item ->
-                    NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) },
-                        selected = currentRoute == item.route,
-                        onClick = {
-                            if (currentRoute != item.route) {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = BottomNavItem.Home.route,
-            modifier = Modifier.padding(padding)
-        ) {
-            composable(BottomNavItem.Home.route) {
-                DashboardContent(
-                    tickets = tickets,
-                    tecnicos = tecnicos,
-                    prioridades = prioridades,
-                )
-            }
-
-            composable(BottomNavItem.Tickets.route) {
-                TicketListScreen(
-                    ticketList = tickets,
-                    onEdit = onEditTicket,
-                    onDelete = onDeleteTicket
-                )
-            }
-
-            composable(BottomNavItem.Tecnicos.route) {
-                TecnicoListScreen(
-                    tecnicoList = tecnicos,
-                    onEdit = onEditTecnico,
-                    onDelete = onDeleteTecnico
-                )
-            }
-
-            composable(BottomNavItem.Prioridades.route) {
-                PrioridadListScreen(
-                    prioridadList = prioridades,
-                    onEdit = onEditPrioridad,
-                    onDelete = onDeletePrioridad
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardContent(
-    tickets: List<TicketEntity>,
-    tecnicos: List<TecnicoEntity>,
-    prioridades: List<PrioridadEntity>
+fun HomeScreen(
+    navController: NavController
 ) {
+
+
     val items = listOf(
-        Triple("Técnicos", tecnicos.size, Icons.Default.People),
-        Triple("Prioridades", prioridades.size, Icons.Default.LowPriority),
-        Triple("Tickets", tickets.size, Icons.Default.List)
+        Triple("Técnicos", 0, Icons.Default.People),
+        Triple("Prioridades", 0, Icons.Default.LowPriority),
+        Triple("Tickets", 0, Icons.Default.List)
     )
 
     Column(modifier = Modifier.padding(16.dp)) {

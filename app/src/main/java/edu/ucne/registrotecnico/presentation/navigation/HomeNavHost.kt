@@ -1,135 +1,143 @@
-package edu.ucne.registrotecnico.presentation.navigation
+package edu.ucne.registrotecnico.presentation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.compose.runtime.getValue
+import androidx.navigation.compose.*
 import androidx.navigation.toRoute
-import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
-import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnico.data.local.entities.TicketEntity
+import edu.ucne.registrotecnico.presentation.navigation.Screen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
-import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
-import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
-import edu.ucne.registrotecnico.presentation.tickets.TicketsViewModel
-import edu.ucne.registrotecnico.presentation.HomeScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadScreen
-import edu.ucne.registrotecnico.presentation.tickets.TicketScreen
+import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
+import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoScreen
+import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
+import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
+import edu.ucne.registrotecnico.presentation.tickets.TicketScreen
+import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
 
+sealed class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: ImageVector
+) {
+    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
+    object TicketsList : BottomNavItem("tickets", "Tickets", Icons.Default.List)
+    object TecnicosList : BottomNavItem("tecnicos", "Técnicos", Icons.Default.People)
+    object PrioridadesList : BottomNavItem("prioridades", "Prioridades", Icons.Default.LowPriority)
+}
 @Composable
 fun HomeNavHost(
-    navController: NavHostController,
-    prioridadesViewModel: PrioridadesViewModel,
-    tecnicosViewModel: TecnicosViewModel,
-    ticketsViewModel: TicketsViewModel,
-    prioridadList: List<PrioridadEntity>,
-    ticketList: List<TicketEntity>,
-    tecnicoList: List<TecnicoEntity>
+    navHostController: NavHostController,
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Home
-    ) {
-        composable<Screen.Home> {
-            val tecnicos by tecnicosViewModel.tecnicos.collectAsState()
-            val prioridades by prioridadesViewModel.prioridades.collectAsState()
-            val tickets by ticketsViewModel.ticketsS.collectAsState()
+    val items = listOf(
+        BottomNavItem.Home,
+        BottomNavItem.TicketsList,
+        BottomNavItem.TecnicosList,
+        BottomNavItem.PrioridadesList,
+    )
 
-            HomeScreen(
-                tecnicos = tecnicos,
-                prioridades = prioridades,
-                tickets = tickets,
-                onEditTecnico = { id -> navController.navigate(Screen.Tecnico(id ?: 0)) },
-                onDeleteTecnico = { tecnico -> tecnicosViewModel.deleteTecnico(tecnico) },
-                onEditPrioridad = { id -> navController.navigate(Screen.Prioridad(id ?: 0)) },
-                onDeletePrioridad = { prioridad -> prioridadesViewModel.deletePrioridad(prioridad) },
-                onEditTicket = { id -> navController.navigate(Screen.Ticket(id ?: 0)) },
-                onDeleteTicket = { ticket -> ticketsViewModel.deleteTicket(ticket) }
-            )
-        }
-
-        //pantalla lista de prioridades
-        composable<Screen.PrioridadList> {
-            val prioridades by prioridadesViewModel.prioridades.collectAsState()
-
-            PrioridadListScreen(
-                prioridadList = prioridades,
-                onEdit = { id ->
-                    navController.navigate(Screen.Prioridad(id ?: 0))
-                },
-                onDelete = { prioridad ->
-                    prioridadesViewModel.deletePrioridad(prioridad)
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                val currentRoute = navHostController.currentBackStackEntryAsState().value?.destination?.route
+                items.forEach { item ->
+                    NavigationBarItem(
+                        icon = { Icon(item.icon, contentDescription = item.label) },
+                        label = { Text(item.label) },
+                        selected = currentRoute == item.route,
+                        onClick = {
+                            if (currentRoute != item.route) {
+                                navHostController.navigate(item.route) {
+                                    popUpTo(navHostController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        }
+                    )
                 }
-            )
-
+            }
         }
+    ) { padding ->
+        NavHost(
+            navController = navHostController,
+            startDestination = BottomNavItem.Home.route,
+            modifier = Modifier.padding(padding)
+        ) {
+            composable(BottomNavItem.Home.route) {
+                HomeScreen(navController = navHostController)
+            }
 
-        //pantalla formulario de prioridades
-        composable<Screen.Prioridad> { backStack ->
-            val prioridadId = backStack.toRoute<Screen.Prioridad>().prioridadId
-            PrioridadScreen(
-                prioridadId = prioridadId,
-                viewModel = prioridadesViewModel,
-                navController = navController,
-                function = { navController.popBackStack() }
-            )
-        }
+            composable(BottomNavItem.TicketsList.route) {
+                TicketListScreen(
+                    goToTicket = { id ->
+                        navHostController.navigate(Screen.Ticket(id ?: 0))
+                    },
+                    createTicket = {
+                        navHostController.navigate(Screen.Ticket(0))
+                    },
+                    deleteTicket = {}
+                )
+            }
 
-        //pantalla lista de tecnicos
-        composable<Screen.TecnicoList> {
-            val tecnicos by tecnicosViewModel.tecnicos.collectAsState()
+            composable<Screen.Ticket> { backStack ->
+                val ticketId = backStack.toRoute<Screen.Ticket>().ticketId
+                TicketScreen(
+                    ticketId = ticketId,
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
 
-            TecnicoListScreen(
-                tecnicoList = tecnicos,
-                onEdit = { id ->
-                    navController.navigate(Screen.Tecnico(id ?: 0))
-                },
-                onDelete = { tecnico ->
-                    tecnicosViewModel.deleteTecnico(tecnico)
-                }
-            )
-        }
+            composable(BottomNavItem.TecnicosList.route) {
+                TecnicoListScreen(
+                    goToTecnico = { id ->
+                        navHostController.navigate(Screen.Tecnico(id ?: 0))
+                    },
+                    createTecnico = {
+                        navHostController.navigate(Screen.Tecnico(0))
+                    },
+                    deleteTecnico = {}
+                )
+            }
 
-        //pantalla formulario de tecnico
-        composable<Screen.Tecnico> { backStack ->
-            val tecnicoId = backStack.toRoute<Screen.Tecnico>().tecnicoId
-            TecnicoScreen(
-                tecnicoId = tecnicoId,
-                viewModel = tecnicosViewModel,
-                navController = navController,
-                function = { navController.popBackStack() }
-            )
-        }
+            composable<Screen.Tecnico> { backStack ->
+                val tecnicoId = backStack.toRoute<Screen.Tecnico>().tecnicoId
+                TecnicoScreen(
+                    tecnicoId = tecnicoId,
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
 
-        //pantalla lista de tickets
-        composable<Screen.TicketList> {
-            val tickets by ticketsViewModel.ticketsS.collectAsState()
+            composable(BottomNavItem.PrioridadesList.route) {
+                PrioridadListScreen(
+                    goToPrioridad = { id ->
+                        navHostController.navigate(Screen.Prioridad(id ?: 0))
+                    },
+                    createPrioridad = {
+                        navHostController.navigate(Screen.Prioridad(0))
+                    },
+                    deletePrioridad = {}
+                )
+            }
 
-            TicketListScreen(
-                ticketList = tickets,
-                onEdit = { id ->
-                    navController.navigate(Screen.Ticket(id ?: 0))
-                },
-                onDelete = { ticket ->
-                    ticketsViewModel.deleteTicket(ticket)
-                }
-            )
-        }
-
-        //pantalla formulario tickets
-        composable<Screen.Ticket> { backStack ->
-            val ticketId = backStack.toRoute<Screen.Ticket>().ticketId
-            TicketScreen(
-                ticketId = ticketId,
-                viewModel = ticketsViewModel,
-                navController = navController,
-                function = { navController.popBackStack() }
-            )
+            composable<Screen.Prioridad> { backStack ->
+                val prioridadId = backStack.toRoute<Screen.Prioridad>().prioridadId
+                PrioridadScreen(
+                    prioridadId = prioridadId,
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
         }
     }
 }
+
+
+
