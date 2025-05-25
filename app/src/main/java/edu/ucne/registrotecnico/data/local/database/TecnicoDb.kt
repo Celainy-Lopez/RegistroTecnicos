@@ -4,9 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import edu.ucne.registrotecnico.data.local.dao.MensajeDao
 import edu.ucne.registrotecnico.data.local.dao.PrioridadDao
 import edu.ucne.registrotecnico.data.local.dao.TecnicoDao
 import edu.ucne.registrotecnico.data.local.dao.TicketDao
+import edu.ucne.registrotecnico.data.local.entities.MensajeEntity
 import edu.ucne.registrotecnico.data.local.entities.PrioridadEntity
 import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
@@ -29,9 +31,10 @@ class Converters {
     entities = [
         TecnicoEntity::class,
         PrioridadEntity:: class,
-        TicketEntity:: class
+        TicketEntity:: class,
+        MensajeEntity:: class
     ],
-    version = 3,
+    version = 6,
     exportSchema = false
 )
 
@@ -40,4 +43,5 @@ abstract class TecnicoDb : RoomDatabase() {
     abstract fun TecnicoDao(): TecnicoDao
     abstract fun PrioridadDao(): PrioridadDao
     abstract fun TicketDao(): TicketDao
+    abstract fun MensajeDao() : MensajeDao
 }
