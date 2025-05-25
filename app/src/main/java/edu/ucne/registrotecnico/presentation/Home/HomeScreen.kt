@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,24 +42,37 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
+import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
+import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
 import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
+import edu.ucne.registrotecnico.presentation.tickets.TicketsViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    tecnicosViewModel: TecnicosViewModel = hiltViewModel(),
+    prioridadesViewModel: PrioridadesViewModel = hiltViewModel(),
+    ticketsViewModel: TicketsViewModel = hiltViewModel()
 ) {
+    val tecnicoUiState by tecnicosViewModel.uiState.collectAsState()
+    val prioridadUiState by prioridadesViewModel.uiState.collectAsState()
+    val ticketUiState by ticketsViewModel.uiState.collectAsState()
 
+    val tecnicoCount = tecnicoUiState.tecnicos.size
+    val prioridadCount = prioridadUiState.prioridades.size
+    val ticketCount = ticketUiState.tickets.size
 
     val items = listOf(
-        Triple("Técnicos", 0, Icons.Default.People),
-        Triple("Prioridades", 0, Icons.Default.LowPriority),
-        Triple("Tickets", 0, Icons.Default.List)
+        Triple("Técnicos", tecnicoCount, Icons.Default.People),
+        Triple("Prioridades", prioridadCount, Icons.Default.LowPriority),
+        Triple("Tickets", ticketCount, Icons.Default.List)
     )
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -91,6 +105,8 @@ fun HomeScreen(
         }
     }
 }
+
+
 
 @Composable
 fun AnimatedDashboardCard(
