@@ -160,55 +160,46 @@ fun MensajeBodyScreen(
                         }
                     }
 
-                    if (selectedRemitente.isNotEmpty()) {
-                        OutlinedTextField(
-                            value = uiState.remitente ?: "",
-                            onValueChange = { onEvent(MensajeEvent.RemitenteChange(it)) },
-                            label = { Text("Nombre") },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        )
+                    OutlinedTextField(
+                        value = uiState.remitente ?: "",
+                        onValueChange = { onEvent(MensajeEvent.RemitenteChange(it)) },
+                        label = { Text("Nombre") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    )
 
-                        OutlinedTextField(
-                            value = uiState.contenido ?: "",
-                            onValueChange = { onEvent(MensajeEvent.ContenidoChange(it)) },
-                            label = { Text("Mensaje") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(120.dp)
-                        )
+                    OutlinedTextField(
+                        value = uiState.contenido ?: "",
+                        onValueChange = { onEvent(MensajeEvent.ContenidoChange(it)) },
+                        label = { Text("Mensaje") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                    )
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(onClick = { showExpandedInput = false }) {
-                                Text("Cancelar")
-                            }
-
-                            Button(
-                                onClick = {
-                                    onEvent(MensajeEvent.Save)
-                                    showExpandedInput = false
-                                },
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.Send,
-                                    contentDescription = "EnviarMensaje",
-                                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                                )
-                            }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showExpandedInput = false }) {
+                            Text("Cancelar")
                         }
-                    } else {
-                        Text(
-                            text = "Seleccione un remitente para comenzar a escribir...",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
+
+                        Button(
+                            onClick = {
+                                onEvent(MensajeEvent.Save)
+                                showExpandedInput = false
+                            },
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.Send,
+                                contentDescription = "EnviarMensaje",
+                                modifier = Modifier.size(ButtonDefaults.IconSize),
+                            )
+                        }
                     }
                 }
             }
@@ -231,12 +222,24 @@ fun MensajeRow(mensaje: MensajeEntity) {
             .padding(vertical = 6.dp),
         horizontalArrangement = arrangement
     ) {
+
+        val inicial = mensaje.remitente.first().uppercaseChar().toString()
+
         if (isOperator) {
-            Avatar(nombre = "O")
+            Avatar(nombre = inicial)
             Spacer(modifier = Modifier.width(8.dp))
         }
 
+
         Column(horizontalAlignment = alignment) {
+            Text(
+                text = mensaje.remitente,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color.Gray,
+                modifier = Modifier.padding(start = 8.dp, bottom = 2.dp)
+            )
+
+
             Box(
                 modifier = Modifier
                     .background(color = bubbleColor, shape = RoundedCornerShape(20.dp))
@@ -253,13 +256,13 @@ fun MensajeRow(mensaje: MensajeEntity) {
                     ).format(mensaje.fecha),
                 style = MaterialTheme.typography.labelSmall,
                 color = dateColor,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+                modifier = Modifier.padding(start = 8.dp, top = 4.dp),
             )
         }
 
         if (!isOperator) {
             Spacer(modifier = Modifier.width(8.dp))
-            Avatar(nombre = "U")
+            Avatar(nombre = inicial)
         }
     }
 }
