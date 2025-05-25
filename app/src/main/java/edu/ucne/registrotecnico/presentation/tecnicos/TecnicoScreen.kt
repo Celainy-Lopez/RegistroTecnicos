@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -49,6 +50,15 @@ fun TecnicoScreen(
         viewModel:: onEvent,
         goBack = goBack
     )
+
+    LaunchedEffect(tecnicoId) {
+        println("id $tecnicoId")
+        tecnicoId?.let {
+            if (it > 0){
+                viewModel.findTecnico(it)
+            }
+        }
+    }
 }
 
 
@@ -109,7 +119,7 @@ fun TecnicoBodyScreen(
                     )
 
                     OutlinedTextField(
-                        value = uiState.nombres,
+                        value = uiState.nombres ?: "",
                         onValueChange = { onEvent(TecnicoEvent.NombresChange(it))},
                         label = { Text("Nombres") },
                         placeholder = { Text("Ej: Juan Pérez") },
@@ -122,12 +132,12 @@ fun TecnicoBodyScreen(
 
                     OutlinedTextField(
                         label = { Text("Sueldo") },
-                        placeholder = { Text("Ej:25000.00") },
+                        placeholder = { Text("Ej: 25000.00") },
                         value = if (uiState.sueldo == 0.0) "" else decimalFormat.format(uiState.sueldo),
                         onValueChange = {
                             val parsed = it.toDoubleOrNull()
                             if (parsed != null) {
-                                uiState.sueldo = parsed
+                                onEvent(TecnicoEvent.SueldoChange(parsed))
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
