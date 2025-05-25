@@ -63,29 +63,6 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val lifecycleOwner = LocalLifecycleOwner.current
-
-            val ticketList by tecnicoDb.TicketDao().getAll()
-                .collectAsStateWithLifecycle(
-                    initialValue = emptyList(),
-                    lifecycleOwner = lifecycleOwner,
-                    minActiveState = Lifecycle.State.STARTED
-                )
-
-            val tecnicoList by tecnicoDb.TecnicoDao().getAll()
-                .collectAsStateWithLifecycle(
-                    initialValue = emptyList(),
-                    lifecycleOwner = lifecycleOwner,
-                    minActiveState = Lifecycle.State.STARTED
-                )
-
-            val prioridadList by tecnicoDb.PrioridadDao().getAll()
-                .collectAsStateWithLifecycle(
-                    initialValue = emptyList(),
-                    lifecycleOwner = lifecycleOwner,
-                    minActiveState = Lifecycle.State.STARTED
-                )
-
             RegistroTecnicoTheme {
                 val nav = rememberNavController()
 
