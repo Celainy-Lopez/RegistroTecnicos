@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.navigation.toRoute
+import edu.ucne.registrotecnico.presentation.mensaje.MensajeScreen
 import edu.ucne.registrotecnico.presentation.navigation.Screen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadScreen
@@ -84,7 +85,20 @@ fun HomeNavHost(
                     createTicket = {
                         navHostController.navigate(Screen.Ticket(0))
                     },
-                    deleteTicket = {}
+                    deleteTicket = {},
+                    goToMensaje = { ticketId ->
+                        require(ticketId != null)
+                        navHostController.navigate(Screen.Mensaje(ticketId))
+                    }
+                )
+            }
+
+            composable<Screen.Mensaje> { backStack ->
+                val ticketId = backStack.toRoute<Screen.Mensaje>().ticketId
+                require(ticketId != null)
+                MensajeScreen(
+                    ticketId = ticketId,
+                    goBack = { navHostController.popBackStack() }
                 )
             }
 

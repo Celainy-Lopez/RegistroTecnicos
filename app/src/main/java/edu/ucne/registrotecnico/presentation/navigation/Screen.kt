@@ -18,4 +18,6 @@ sealed class Screen {
     data class Prioridad(val prioridadId: Int?) : Screen()
     @Serializable
     data class Ticket(val ticketId: Int?) : Screen()
+    @Serializable
+    data class Mensaje(val ticketId: Int?) : Screen()
 }
