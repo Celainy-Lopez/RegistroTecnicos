@@ -1,6 +1,5 @@
 package edu.ucne.registrotecnico.presentation.tickets
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,13 +33,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
 import androidx.compose.runtime.getValue
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun TicketListScreen(
     viewModel: TicketsViewModel = hiltViewModel(),
     goToTicket: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket : ((TicketEntity) -> Unit) ? = null
+    deleteTicket : ((TicketEntity) -> Unit) ? = null,
+    goToMensaje: (Int) -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -49,7 +53,8 @@ fun TicketListScreen(
         deleteTicket = { ticket ->
             viewModel.onEvent(TicketEvent.TicketChange(ticket.ticketId ?: 0))
             viewModel.onEvent(TicketEvent.Delete)
-        }
+        },
+        goToMensaje = goToMensaje
     )
 }
 
@@ -59,7 +64,8 @@ fun TicketListBodyScreen(
     uiState: TicketUiState,
     goToTicket: (Int) -> Unit,
     createTicket : () -> Unit,
-    deleteTicket: (TicketEntity) -> Unit
+    deleteTicket: (TicketEntity) -> Unit,
+    goToMensaje: (Int) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -85,7 +91,9 @@ fun TicketListBodyScreen(
                     TicketRow(
                         it = ticket,
                         goToTicket = { goToTicket(ticket.ticketId ?: 0) },
-                        deleteTicket = deleteTicket
+                        deleteTicket = deleteTicket,
+                        goToMensaje = goToMensaje,
+                        ticket = ticket
                     )
                 }
             }
@@ -98,7 +106,9 @@ fun TicketListBodyScreen(
 private fun TicketRow(
     it: TicketEntity,
     goToTicket: () -> Unit,
-    deleteTicket: (TicketEntity) -> Unit
+    deleteTicket: (TicketEntity) -> Unit,
+    goToMensaje: (Int) -> Unit,
+    ticket: TicketEntity
 ) {
     Card(
         modifier = Modifier
@@ -124,6 +134,9 @@ private fun TicketRow(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
+                IconButton( onClick = { goToMensaje (ticket.ticketId ?:0)}) {
+                    Icon(imageVector = Icons.Default.QuestionAnswer, contentDescription = "Eliminar")
+                }
                 IconButton(onClick = goToTicket ) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                 }
@@ -136,8 +149,8 @@ private fun TicketRow(
     }
 }
 
-fun formatDate(date: java.util.Date): String {
-    val formatter = java.text.SimpleDateFormat("dd/MM/yyyy")
+fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
     return formatter.format(date)
 }
 
@@ -148,7 +161,7 @@ private fun TicketListPreview() {
     val tickets = listOf(
         TicketEntity(
             ticketId = 1,
-            fecha = java.util.Date(),
+            fecha = Date(),
             prioridadId = 1,
             cliente = "Juan Pérez",
             asunto = "Problema con red",
@@ -156,7 +169,7 @@ private fun TicketListPreview() {
         ),
         TicketEntity(
             ticketId = 2,
-            fecha = java.util.Date(),
+            fecha = Date(),
             prioridadId = 2,
             cliente = "Ana Gómez",
             asunto = "Error en sistema",
@@ -169,6 +182,7 @@ private fun TicketListPreview() {
             goToTicket = {},
             createTicket = {},
             deleteTicket = {},
+            goToMensaje = {}
         )
     }
 }
