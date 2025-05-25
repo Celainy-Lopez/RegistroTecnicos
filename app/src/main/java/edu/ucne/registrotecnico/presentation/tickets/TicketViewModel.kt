@@ -7,14 +7,9 @@ import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.data.repository.PrioridadesRepository
 import edu.ucne.registrotecnico.data.repository.TecnicosRepository
 import edu.ucne.registrotecnico.data.repository.TicketsRepository
-import edu.ucne.registrotecnico.presentation.tickets.TicketEvent
-import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -71,12 +66,11 @@ class TicketsViewModel @Inject constructor(
 
     private fun saveTicket() {
         viewModelScope.launch {
-            if (_uiState.value.cliente.isNullOrBlank() && _uiState.value.prioridadId > 0
-                && _uiState.value.descripcion.isNullOrBlank()
-                && _uiState.value.asunto.isNullOrBlank()
-                && _uiState.value.tecnicoId > 0){
+            if (_uiState.value.prioridadId<= 0 && _uiState.value.cliente.isNullOrBlank()
+                && _uiState.value.asunto.isNullOrBlank() && _uiState.value.descripcion.isNullOrBlank()
+                &&  _uiState.value.tecnicoId <= 0){
                 _uiState.update {
-                    it.copy(errorMessage = "Campo vacios")
+                    it.copy(errorMessage = "Campos vacios")
                 }
             }
             else{
