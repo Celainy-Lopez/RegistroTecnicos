@@ -8,11 +8,11 @@ import java.util.Date
 data class TicketUiState(
     val ticketId: Int? = null,
     var fecha: Date = Date(),
-    val prioridadId: Int,
+    val prioridadId: Int = 0,
     val cliente: String = "",
     val asunto: String = "",
     val descripcion: String = "",
-    val tecnicoId: Int,
+    val tecnicoId: Int = 0,
     val errorMessage: String? = null,
     val tickets: List<TicketEntity> = emptyList(),
     val prioridades: List<PrioridadEntity> = emptyList(),
