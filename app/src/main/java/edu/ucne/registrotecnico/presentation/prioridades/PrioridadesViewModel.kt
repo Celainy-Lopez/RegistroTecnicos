@@ -116,7 +116,7 @@ class PrioridadesViewModel @Inject constructor(
 
 fun PrioridadUiState.toEntity() = PrioridadEntity(
         prioridadId = prioridadId,
-        descripcion = descripcion
+        descripcion = descripcion ?: ""
     )
 
 }

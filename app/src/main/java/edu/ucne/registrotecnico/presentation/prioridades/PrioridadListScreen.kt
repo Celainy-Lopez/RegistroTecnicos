@@ -40,14 +40,17 @@ fun PrioridadListScreen(
     viewModel: PrioridadesViewModel = hiltViewModel(),
     goToPrioridad: (Int) -> Unit,
     createPrioridad: () -> Unit,
-    deletePrioridad: () -> Unit
+    deletePrioridad: ((PrioridadEntity) -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     PrioridadListBodyScreen(
-        uiState,
-        goToPrioridad,
-        createPrioridad,
-        deletePrioridad
+        uiState = uiState,
+        goToPrioridad = goToPrioridad,
+        createPrioridad = createPrioridad,
+        deletePrioridad = { prioridad ->
+            viewModel.onEvent(PrioridadEvent.PrioridadChange(prioridad.prioridadId ?: 0))
+            viewModel.onEvent(PrioridadEvent.Delete)
+        }
     )
 }
 
@@ -58,7 +61,7 @@ fun PrioridadListBodyScreen(
     uiState: PrioridadUiState,
     goToPrioridad: (Int) -> Unit,
     createPrioridad: () -> Unit,
-    deletePrioridad: () -> Unit
+    deletePrioridad: (PrioridadEntity) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -93,12 +96,11 @@ fun PrioridadListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(uiState.prioridades) {
+                items(uiState.prioridades) {prioridad ->
                     PrioridadRow(
-                        it,
-                        goToPrioridad,
-                        createPrioridad,
-                        deletePrioridad
+                        it = prioridad,
+                        goToPrioridad = {goToPrioridad(prioridad.prioridadId?: 0)},
+                        deletePrioridad = deletePrioridad
                     )
                 }
             }
@@ -109,9 +111,8 @@ fun PrioridadListBodyScreen(
 @Composable
 private fun PrioridadRow(
     it: PrioridadEntity,
-    goToPrioridad: (Int) -> Unit,
-    createPrioridad: () -> Unit,
-    deletePrioridad: () -> Unit
+    goToPrioridad: () -> Unit,
+    deletePrioridad: (PrioridadEntity) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -124,18 +125,15 @@ private fun PrioridadRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)
-                .clickable{
-                    goToPrioridad(it.prioridadId?: 0)
-                }
         ) {
             Text(modifier = Modifier.weight(1f), text = it.prioridadId.toString())
             Text(modifier = Modifier.weight(1f), text = it.descripcion)
 
             Row(modifier = Modifier.weight(1f)) {
-                IconButton(onClick = createPrioridad) {
+                IconButton(onClick = goToPrioridad) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                 }
-                IconButton(onClick = deletePrioridad) {
+                IconButton(onClick = { deletePrioridad(it) }) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
                 }
             }

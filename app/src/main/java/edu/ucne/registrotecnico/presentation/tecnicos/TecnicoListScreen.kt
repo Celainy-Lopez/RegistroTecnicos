@@ -39,14 +39,17 @@ fun TecnicoListScreen(
     viewModel: TecnicosViewModel = hiltViewModel(),
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico : () -> Unit
+    deleteTecnico : ((TecnicoEntity) -> Unit) ? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     PrioridadListBodyScreen(
-        uiState,
-        goToTecnico,
-        createTecnico,
-        deleteTecnico
+        uiState = uiState,
+        goToTecnico = goToTecnico,
+        createTecnico = createTecnico,
+        deleteTecnico = { tecnico ->
+            viewModel.onEvent(TecnicoEvent.TecnicoChange(tecnico.tecnicoId ?: 0))
+            viewModel.onEvent(TecnicoEvent.Delete)
+        }
     )
 }
 
@@ -56,7 +59,7 @@ fun PrioridadListBodyScreen(
     uiState: TecnicoUiState,
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
-    deleteTecnico: () -> Unit
+    deleteTecnico: (TecnicoEntity) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -92,12 +95,11 @@ fun PrioridadListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(uiState.tecnicos) {
+                items(uiState.tecnicos) { tecnico->
                     TecnicoRow(
-                        it,
-                        goToTecnico,
-                        createTecnico,
-                        deleteTecnico
+                        it = tecnico,
+                        goToTecnico = { goToTecnico(tecnico.tecnicoId ?: 0) },
+                        deleteTecnico = deleteTecnico
                     )
                 }
             }
@@ -108,9 +110,8 @@ fun PrioridadListBodyScreen(
 @Composable
 private fun TecnicoRow(
     it: TecnicoEntity,
-    goToTecnico: (Int) -> Unit,
-    createTecnico: () -> Unit,
-    deleteTecnico: () -> Unit
+    goToTecnico: () -> Unit,
+    deleteTecnico: (TecnicoEntity) -> Unit
 
 ) {
     val decimalFormat = DecimalFormat("#,##0.00")
@@ -125,19 +126,16 @@ private fun TecnicoRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)
-                .clickable{
-                    goToTecnico(it.tecnicoId?: 0)
-                }
         ) {
 
             Text(modifier = Modifier.weight(1f), text = it.tecnicoId.toString())
             Text(modifier = Modifier.weight(1f), text = it.nombres)
             Text(modifier = Modifier.weight(1f), text = decimalFormat.format(it.sueldo))
 
-            IconButton(onClick = createTecnico ) {
+            IconButton(onClick = goToTecnico ) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
             }
-            IconButton(onClick = deleteTecnico) {
+            IconButton(onClick = { deleteTecnico(it)}) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
             }
         }

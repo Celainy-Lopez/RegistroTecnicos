@@ -38,15 +38,18 @@ fun TicketListScreen(
     viewModel: TicketsViewModel = hiltViewModel(),
     goToTicket: (Int) -> Unit,
     createTicket: () -> Unit,
-    deleteTicket: () -> Unit
+    deleteTicket : ((TicketEntity) -> Unit) ? = null
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TicketListBodyScreen(
-      uiState,
-        goToTicket,
-        createTicket,
-        deleteTicket
+        uiState = uiState,
+        goToTicket = goToTicket,
+        createTicket = createTicket,
+        deleteTicket = { ticket ->
+            viewModel.onEvent(TicketEvent.TicketChange(ticket.ticketId ?: 0))
+            viewModel.onEvent(TicketEvent.Delete)
+        }
     )
 }
 
@@ -55,9 +58,9 @@ fun TicketListScreen(
 fun TicketListBodyScreen(
     uiState: TicketUiState,
     goToTicket: (Int) -> Unit,
-    createTicket: () -> Unit,
-    deleteTicket: () -> Unit
-){
+    createTicket : () -> Unit,
+    deleteTicket: (TicketEntity) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,12 +81,11 @@ fun TicketListBodyScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(uiState.tickets) {
+                items(uiState.tickets) {ticket ->
                     TicketRow(
-                        it,
-                        goToTicket,
-                        createTicket,
-                        deleteTicket
+                        it = ticket,
+                        goToTicket = { goToTicket(ticket.ticketId ?: 0) },
+                        deleteTicket = deleteTicket
                     )
                 }
             }
@@ -92,13 +94,11 @@ fun TicketListBodyScreen(
 }
 
 
-
 @Composable
 private fun TicketRow(
     it: TicketEntity,
-    goToTicket: (Int) -> Unit,
-    createTicket: () -> Unit,
-    deleteTicket: () -> Unit
+    goToTicket: () -> Unit,
+    deleteTicket: (TicketEntity) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -109,15 +109,12 @@ private fun TicketRow(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .clickable{
-                    goToTicket(it.ticketId?: 0)
-                }
         ) {
             Text(text = "Ticket Id: " + it.ticketId.toString())
             Text(text = "Fecha: ${formatDate(it.fecha)}")
-            Text(text = "Prioridad: " +   it.tecnicoId)
-            Text(text = "Cliente: " +  it.cliente)
-            Text(text = "Asunto: " +  it.asunto)
+            Text(text = "Prioridad: " + it.prioridadId)
+            Text(text = "Cliente: " + it.cliente)
+            Text(text = "Asunto: " + it.asunto)
             Text(text = "Descripción : " + it.descripcion)
             Text(text = "Tecnico : " + it.tecnicoId.toString())
 
@@ -127,10 +124,10 @@ private fun TicketRow(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = createTicket) {
+                IconButton(onClick = goToTicket ) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                 }
-                IconButton(onClick = deleteTicket) {
+                IconButton(onClick = { deleteTicket(it)}) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar")
                 }
             }
@@ -143,7 +140,6 @@ fun formatDate(date: java.util.Date): String {
     val formatter = java.text.SimpleDateFormat("dd/MM/yyyy")
     return formatter.format(date)
 }
-
 
 
 @Preview(showBackground = true, showSystemUi = true)
