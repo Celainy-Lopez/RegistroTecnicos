@@ -3,6 +3,7 @@ package edu.ucne.registrotecnico.presentation.tickets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.registrotecnico.data.local.entities.TicketEntity
 import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.font.FontWeight
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -120,13 +122,18 @@ private fun TicketRow(
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            Text(text = "Ticket Id: " + it.ticketId.toString())
-            Text(text = "Fecha: ${formatDate(it.fecha)}")
-            Text(text = "Prioridad: " + it.prioridadId)
-            Text(text = "Cliente: " + it.cliente)
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Ticket #: " + it.ticketId.toString())
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(text = "Fecha: ${formatDate(it.fecha)}")
+            }
+            Text(text = "Cliente: " + it.cliente, fontWeight = FontWeight.ExtraBold)
             Text(text = "Asunto: " + it.asunto)
-            Text(text = "Descripción : " + it.descripcion)
-            Text(text = "Tecnico : " + it.tecnicoId.toString())
 
             Row(
                 modifier = Modifier
