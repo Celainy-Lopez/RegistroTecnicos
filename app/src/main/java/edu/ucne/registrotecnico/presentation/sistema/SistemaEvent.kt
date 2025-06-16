@@ -1,4 +1,17 @@
 package edu.ucne.registrotecnico.presentation.sistema
 
-interface SistemaEvent {
+sealed interface SistemaEvent {
+    data class SistemaChange(val usuarioId: Int): SistemaEvent
+    data class NombreChange(val nombre: String): SistemaEvent
+    data class DescripcionChange(val descripcion: String): SistemaEvent
+    data class CostoChange(val costo: Double ): SistemaEvent
+
+    data object GetSistemas: SistemaEvent
+    data object PostSistema: SistemaEvent
+    data object Nuevo: SistemaEvent
+    data class GetSistema(val id: Int): SistemaEvent
+
+    data object CleanErrorMessageNombre: SistemaEvent
+    data object CleanErrorMessageBalance: SistemaEvent
+    data object ResetSuccessMessage: SistemaEvent
 }
