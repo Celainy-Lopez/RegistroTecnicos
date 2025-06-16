@@ -10,7 +10,7 @@ data class SistemaUiState(
 
     val errorMessage: String? = null,
     val errorNombre: String? = null,
-    val errorDesripcion: String? = null,
+    val errorDescripcion: String? = null,
     val errorCosto: String? = null,
 
     val successMessage: String? = null,
