@@ -15,7 +15,7 @@ import kotlin.jvm.java
 @InstallIn(SingletonComponent::class)
 @Module
 object ApiModule {
-    const val BASE_URL = "https://registrosistemaapi.azurewebsites.net"
+    const val BASE_URL = "https://registrosistemaapi.azurewebsites.net/"
 
     @Provides
     @Singleton
