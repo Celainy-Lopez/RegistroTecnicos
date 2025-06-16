@@ -27,8 +27,8 @@ class PrioridadesViewModel @Inject constructor(
         getPrioridades()
     }
 
-    fun onEvent(event: PrioridadEvent){
-        when (event){
+    fun onEvent(event: PrioridadEvent) {
+        when (event) {
             is PrioridadEvent.PrioridadChange -> onPrioridadIdChange(event.prioridadId)
             is PrioridadEvent.DescripcionChange -> onDescripcionChange(event.descripcion)
             PrioridadEvent.Save -> savePrioridad()
@@ -44,8 +44,7 @@ class PrioridadesViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(errorMessage = "Campos vacios")
                 }
-            }
-            else{
+            } else{
                 prioridadesRepository.save(_uiState.value.toEntity())
             }
         }
@@ -62,9 +61,9 @@ class PrioridadesViewModel @Inject constructor(
     }
 
 
-    fun findPrioridad(prioridadId: Int){
+    fun findPrioridad(prioridadId: Int) {
         viewModelScope.launch {
-            if(prioridadId > 0){
+            if (prioridadId > 0) {
                 val prioridad = prioridadesRepository.find(prioridadId)
                 _uiState.update {
                     it.copy(
@@ -114,7 +113,7 @@ class PrioridadesViewModel @Inject constructor(
     }
 
 
-fun PrioridadUiState.toEntity() = PrioridadEntity(
+    fun PrioridadUiState.toEntity() = PrioridadEntity(
         prioridadId = prioridadId,
         descripcion = descripcion ?: ""
     )
