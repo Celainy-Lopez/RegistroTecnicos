@@ -45,13 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
-import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
-import edu.ucne.registrotecnico.presentation.sistema.SistemasViewModel
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
+import edu.ucne.registrotecnico.presentation.sistemas.SistemasViewModel
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
-import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
 import edu.ucne.registrotecnico.presentation.tickets.TicketsViewModel
 
 

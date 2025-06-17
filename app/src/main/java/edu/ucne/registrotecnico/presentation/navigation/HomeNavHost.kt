@@ -14,15 +14,12 @@ import edu.ucne.registrotecnico.presentation.mensaje.MensajeScreen
 import edu.ucne.registrotecnico.presentation.navigation.Screen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadScreen
-import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
-import edu.ucne.registrotecnico.presentation.sistema.SistemaListScreen
-import edu.ucne.registrotecnico.presentation.sistema.SistemaScreen
+import edu.ucne.registrotecnico.presentation.sistemas.SistemaListScreen
+import edu.ucne.registrotecnico.presentation.sistemas.SistemaScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoScreen
-import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
 import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnico.presentation.tickets.TicketScreen
-import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
 
 sealed class BottomNavItem(
     val route: String,

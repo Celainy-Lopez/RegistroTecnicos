@@ -1,4 +1,4 @@
-package edu.ucne.registrotecnico.presentation.sistema
+package edu.ucne.registrotecnico.presentation.sistemas
 
 import edu.ucne.registrotecnico.data.remote.dto.SistemaDto
 

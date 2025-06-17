@@ -1,5 +1,12 @@
 package edu.ucne.registrotecnico.presentation.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Api
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LowPriority
+import androidx.compose.material.icons.filled.People
+import edu.ucne.registrotecnico.presentation.BottomNavItem
 import kotlinx.serialization.Serializable
 
 sealed class Screen {

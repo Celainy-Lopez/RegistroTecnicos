@@ -1,4 +1,4 @@
-package edu.ucne.registrotecnico.presentation.sistema
+package edu.ucne.registrotecnico.presentation.sistemas
 
 import edu.ucne.registrotecnico.data.remote.Resource
 import edu.ucne.registrotecnico.data.remote.dto.SistemaDto
@@ -7,7 +7,6 @@ import edu.ucne.registrotecnico.presentation.UiEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import edu.ucne.registrotecnico.presentation.prioridades.PrioridadEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

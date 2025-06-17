@@ -1,4 +1,4 @@
-package edu.ucne.registrotecnico.presentation.sistema
+package edu.ucne.registrotecnico.presentation.sistemas
 
 sealed interface SistemaEvent {
     data class SistemaChange(val sistemaId: Int): SistemaEvent
