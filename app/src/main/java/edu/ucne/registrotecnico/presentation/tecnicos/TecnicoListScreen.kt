@@ -42,7 +42,7 @@ fun TecnicoListScreen(
     deleteTecnico : ((TecnicoEntity) -> Unit) ? = null
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    PrioridadListBodyScreen(
+    TecnicoListBodyScreen(
         uiState = uiState,
         goToTecnico = goToTecnico,
         createTecnico = createTecnico,
@@ -55,7 +55,7 @@ fun TecnicoListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrioridadListBodyScreen(
+fun TecnicoListBodyScreen(
     uiState: TecnicoUiState,
     goToTecnico: (Int) -> Unit,
     createTecnico: () -> Unit,
