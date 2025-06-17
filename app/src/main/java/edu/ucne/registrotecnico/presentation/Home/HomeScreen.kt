@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Api
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LowPriority
 import androidx.compose.material.icons.filled.People
@@ -47,6 +48,7 @@ import androidx.navigation.NavController
 import edu.ucne.registrotecnico.data.local.entities.TecnicoEntity
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
+import edu.ucne.registrotecnico.presentation.sistema.SistemasViewModel
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
 import edu.ucne.registrotecnico.presentation.tickets.TicketUiState
@@ -59,20 +61,24 @@ fun HomeScreen(
     navController: NavController,
     tecnicosViewModel: TecnicosViewModel = hiltViewModel(),
     prioridadesViewModel: PrioridadesViewModel = hiltViewModel(),
-    ticketsViewModel: TicketsViewModel = hiltViewModel()
+    ticketsViewModel: TicketsViewModel = hiltViewModel(),
+    sistemasViewModel: SistemasViewModel = hiltViewModel()
 ) {
     val tecnicoUiState by tecnicosViewModel.uiState.collectAsState()
     val prioridadUiState by prioridadesViewModel.uiState.collectAsState()
     val ticketUiState by ticketsViewModel.uiState.collectAsState()
+    val sistemaUiState by sistemasViewModel.uiState.collectAsState()
 
     val tecnicoCount = tecnicoUiState.tecnicos.size
     val prioridadCount = prioridadUiState.prioridades.size
     val ticketCount = ticketUiState.tickets.size
+    val sistemaCount = sistemaUiState.sistemas.size
 
     val items = listOf(
         Triple("Técnicos", tecnicoCount, Icons.Default.People),
         Triple("Prioridades", prioridadCount, Icons.Default.LowPriority),
-        Triple("Tickets", ticketCount, Icons.Default.List)
+        Triple("Tickets", ticketCount, Icons.Default.List),
+        Triple("Sistemas", sistemaCount, Icons.Default.Api)
     )
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -105,7 +111,6 @@ fun HomeScreen(
         }
     }
 }
-
 
 
 @Composable
