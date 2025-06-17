@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,25 +75,26 @@ fun TecnicoBodyScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Registro Técnicos",
+                        "Registro Tecnicos",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
-                },
-                navigationIcon = {
+                }, navigationIcon = {
                     IconButton(onClick = goBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = "Volver",
+                            tint = MaterialTheme.colorScheme.surface,
                         )
                     }
-                }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             )
-        }
-    ) { innerPadding ->
+        },
+    )  { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -110,7 +112,7 @@ fun TecnicoBodyScreen(
                 ) {
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
-                        value = uiState.tecnicoId.toString() ?: "0",
+                        value = uiState.tecnicoId?.toString() ?: "0",
                         onValueChange = { },
                         label = { Text("ID") },
                         modifier = Modifier.fillMaxWidth(),

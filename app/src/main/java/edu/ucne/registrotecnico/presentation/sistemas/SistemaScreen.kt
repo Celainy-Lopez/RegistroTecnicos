@@ -153,7 +153,7 @@ fun SistemaBodyScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
-                        value = uiState.sistemaId.toString() ?: "0",
+                        value = uiState.sistemaId?.toString() ?: "0",
                         onValueChange = {},
                         label = { Text("ID") },
                         modifier = Modifier.fillMaxWidth(),

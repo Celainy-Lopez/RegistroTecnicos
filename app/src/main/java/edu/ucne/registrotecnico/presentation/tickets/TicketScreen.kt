@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -90,24 +91,25 @@ fun TicketBodyScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Registro Tickets",
+                        "Registro Ticket",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
-                },
-                navigationIcon = {
+                }, navigationIcon = {
                     IconButton(onClick = goBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = "Volver",
+                            tint = MaterialTheme.colorScheme.surface,
                         )
                     }
-                }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             )
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -126,7 +128,7 @@ fun TicketBodyScreen(
                 ) {
                     Spacer(modifier = Modifier.height(32.dp))
                     OutlinedTextField(
-                        value = uiState.ticketId.toString() ?: "0",
+                        value = uiState.ticketId?.toString() ?: "0",
                         onValueChange = {},
                         label = { Text("ID") },
                         modifier = Modifier.fillMaxWidth(),
