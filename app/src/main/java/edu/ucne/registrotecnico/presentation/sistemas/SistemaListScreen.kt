@@ -1,6 +1,5 @@
-package edu.ucne.registrotecnico.presentation.sistema
+package edu.ucne.registrotecnico.presentation.sistemas
 
-import android.R.style
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -84,15 +82,15 @@ fun SistemaListBodyScreen(
                 title = {
                     Text(
                         "API Sistemas",
-                        style = MaterialTheme.typography.titleLarge.copy(color = Color.White)
+                        style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.surface)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = goBack) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            imageVector =  Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 },
@@ -128,18 +126,19 @@ fun SistemaListBodyScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Registre al menos un sistema para ver la lista",
+                            text = "No hay usuarios registrados",
                             style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
                         )
                     }
-                } else {
+                }  else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                     ) {
                         items(uiState.sistemas) { sistema ->
-                            SistemaRow(
+                            SistemaRow (
                                 it = sistema,
                                 goToSistema = { goToSistema(sistema.sistemaId ?: 0) }
                             )
@@ -228,7 +227,7 @@ private fun Preview() {
             costo = 10000.0
         ),
         SistemaDto(
-            sistemaId = 1,
+            sistemaId = 2,
             nombre = "Cuentas por Cobrar",
             descripcion = "Cobrar cuentas por cobrar",
             costo = 10000.0
