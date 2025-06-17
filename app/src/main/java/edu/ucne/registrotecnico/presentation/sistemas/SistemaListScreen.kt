@@ -195,21 +195,21 @@ private fun SistemaRow(
 
             Row {
                 Text(text = "Nombre ", fontWeight = FontWeight.ExtraBold)
-                Text(text = "Nombre: " + it.nombre)
+                Text( it.nombre)
             }
 
             Spacer(modifier = Modifier.weight(2f))
 
             Row {
                 Text(text = "Descripción: ", fontWeight = FontWeight.ExtraBold)
-                Text(text = "Descripción: " + it.descripcion)
+                Text( it.descripcion)
             }
 
             Spacer(modifier = Modifier.weight(2f))
 
             Row {
                 Text(text = "Costo: ", fontWeight = FontWeight.ExtraBold)
-                Text(text = "Costo: " + decimalFormat.format(it.costo))
+                Text(decimalFormat.format(it.costo))
             }
         }
     }

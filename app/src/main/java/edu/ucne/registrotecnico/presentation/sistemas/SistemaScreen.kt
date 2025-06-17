@@ -213,6 +213,9 @@ fun SistemaBodyScreen(
 
                     )
 
+                    Spacer(modifier = Modifier.height(32.dp))
+
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
