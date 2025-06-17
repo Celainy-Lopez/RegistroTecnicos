@@ -15,6 +15,8 @@ import edu.ucne.registrotecnico.presentation.navigation.Screen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadListScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadScreen
 import edu.ucne.registrotecnico.presentation.prioridades.PrioridadUiState
+import edu.ucne.registrotecnico.presentation.sistema.SistemaListScreen
+import edu.ucne.registrotecnico.presentation.sistema.SistemaScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoUiState
@@ -31,6 +33,7 @@ sealed class BottomNavItem(
     object TicketsList : BottomNavItem("tickets", "Tickets", Icons.Default.List)
     object TecnicosList : BottomNavItem("tecnicos", "Técnicos", Icons.Default.People)
     object PrioridadesList : BottomNavItem("prioridades", "Prioridades", Icons.Default.LowPriority)
+    object SistemasList: BottomNavItem("sistemas", "Sistemas", Icons.Default.Api)
 }
 @Composable
 fun HomeNavHost(
@@ -41,6 +44,7 @@ fun HomeNavHost(
         BottomNavItem.TicketsList,
         BottomNavItem.TecnicosList,
         BottomNavItem.PrioridadesList,
+        BottomNavItem.SistemasList
     )
 
     Scaffold(
@@ -146,6 +150,24 @@ fun HomeNavHost(
                 val prioridadId = backStack.toRoute<Screen.Prioridad>().prioridadId
                 PrioridadScreen(
                     prioridadId = prioridadId,
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
+
+            composable (BottomNavItem.SistemasList.route) {
+                SistemaListScreen (
+                    goToSistema = { id ->
+                        navHostController.navigate(Screen.Sistema(id))
+                    },
+                    createSistema = {
+                        navHostController.navigate(Screen.Sistema(null))
+                    },
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
+
+            composable <Screen.Sistema>{ backStack ->
+                SistemaScreen (
                     goBack = { navHostController.popBackStack() }
                 )
             }
