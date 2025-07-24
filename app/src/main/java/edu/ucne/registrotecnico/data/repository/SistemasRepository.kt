@@ -27,7 +27,6 @@ class SistemasRepository @Inject constructor(
         } catch (e: HttpException) {
             emit(Resource.Error("Error de conexión: ${e.message()}"))
         } catch (e: Exception) {
-            //emit(Resource.Error("Error desconocido: ${e.message}"))
         }
         sistemasDto = sistemaDao.getAll()
         val listSistemaDto = sistemasDto.map {
