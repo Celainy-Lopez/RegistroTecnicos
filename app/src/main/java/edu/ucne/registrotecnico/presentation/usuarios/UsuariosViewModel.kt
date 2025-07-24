@@ -9,7 +9,9 @@ import edu.ucne.registrotecnico.data.remote.dto.UsuarioDto
 import edu.ucne.registrotecnico.data.repository.UsuariosRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,8 +26,8 @@ class UsuariosViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UsuarioUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     init {
         getUsuarios()
@@ -94,7 +96,7 @@ class UsuariosViewModel @Inject constructor(
                 nuevo()
 
                 delay(3000)
-                _uiEvent.send(UiEvent.NavigateUp)
+                _uiEvent.emit(UiEvent.NavigateUp)
             } catch (e: retrofit2.HttpException) {
                 if (e.code() == 500) {
                     _uiState.update {
@@ -121,7 +123,7 @@ class UsuariosViewModel @Inject constructor(
                     )
                 }
             }
-            _uiEvent.send(UiEvent.NavigateUp)
+            _uiEvent.emit(UiEvent.NavigateUp)
         }
     }
 

@@ -9,7 +9,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,8 +26,8 @@ class SistemasViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SistemaUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
+    private val _uiEvent = MutableSharedFlow<UiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
 
     init {
         getSistemas()
@@ -102,7 +104,7 @@ class SistemasViewModel @Inject constructor(
                 nuevo()
 
                 delay(3000)
-                _uiEvent.send(UiEvent.NavigateUp)
+                _uiEvent.emit(UiEvent.NavigateUp)
             } catch (e: retrofit2.HttpException) {
                 if (e.code() == 500) {
                     _uiState.update {
@@ -129,7 +131,7 @@ class SistemasViewModel @Inject constructor(
                     )
                 }
             }
-            _uiEvent.send(UiEvent.NavigateUp)
+            _uiEvent.emit(UiEvent.NavigateUp)
         }
     }
 
