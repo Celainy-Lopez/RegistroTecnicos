@@ -43,8 +43,8 @@ class UsuariosViewModel @Inject constructor(
             UsuarioEvent.PostUsuario -> addUsuario()
             UsuarioEvent.Nuevo -> nuevo()
 
-            UsuarioEvent.CleanErrorMessageNombre -> CleanErrorMessageNombre()
-            UsuarioEvent.CleanErrorMessageBalance -> CleanErrorMessageCosto()
+            UsuarioEvent.CleanErrorMessageNombre -> cleanErrorMessageNombre()
+            UsuarioEvent.CleanErrorMessageBalance -> cleanErrorMessageCosto()
 
             UsuarioEvent.ResetSuccessMessage -> _uiState.update {
                 it.copy(
@@ -227,7 +227,7 @@ class UsuariosViewModel @Inject constructor(
     }
 
 
-    private fun CleanErrorMessageNombre() {
+    private fun cleanErrorMessageNombre() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(errorNombre = "")
@@ -236,7 +236,7 @@ class UsuariosViewModel @Inject constructor(
     }
 
 
-    private fun CleanErrorMessageCosto() {
+    private fun cleanErrorMessageCosto() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(errorBalance = "")
