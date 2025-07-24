@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import edu.ucne.registrotecnico.data.remote.SistemainApi
+import edu.ucne.registrotecnico.data.remote.UsuarioinApi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -32,5 +33,15 @@ object ApiModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(SistemainApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesUsuarioApi(moshi: Moshi): UsuarioinApi {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(UsuarioinApi::class.java)
     }
 }
