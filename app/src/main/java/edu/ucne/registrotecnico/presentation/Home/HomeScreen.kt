@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Api
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LowPriority
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
@@ -49,6 +50,7 @@ import edu.ucne.registrotecnico.presentation.prioridades.PrioridadesViewModel
 import edu.ucne.registrotecnico.presentation.sistemas.SistemasViewModel
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicosViewModel
 import edu.ucne.registrotecnico.presentation.tickets.TicketsViewModel
+import edu.ucne.registrotecnico.presentation.usuarios.UsuariosViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -58,23 +60,27 @@ fun HomeScreen(
     tecnicosViewModel: TecnicosViewModel = hiltViewModel(),
     prioridadesViewModel: PrioridadesViewModel = hiltViewModel(),
     ticketsViewModel: TicketsViewModel = hiltViewModel(),
-    sistemasViewModel: SistemasViewModel = hiltViewModel()
+    sistemasViewModel: SistemasViewModel = hiltViewModel(),
+    usuariosViewModel: UsuariosViewModel = hiltViewModel()
 ) {
     val tecnicoUiState by tecnicosViewModel.uiState.collectAsState()
     val prioridadUiState by prioridadesViewModel.uiState.collectAsState()
     val ticketUiState by ticketsViewModel.uiState.collectAsState()
     val sistemaUiState by sistemasViewModel.uiState.collectAsState()
+    val usuariosUiState by usuariosViewModel.uiState.collectAsState()
 
     val tecnicoCount = tecnicoUiState.tecnicos.size
     val prioridadCount = prioridadUiState.prioridades.size
     val ticketCount = ticketUiState.tickets.size
     val sistemaCount = sistemaUiState.sistemas.size
+    val usuarioCount = usuariosUiState.usuarios.size
 
     val items = listOf(
         Triple("Técnicos", tecnicoCount, Icons.Default.People),
         Triple("Prioridades", prioridadCount, Icons.Default.LowPriority),
         Triple("Tickets", ticketCount, Icons.Default.List),
-        Triple("Sistemas", sistemaCount, Icons.Default.Api)
+        Triple("Sistemas", sistemaCount, Icons.Default.Api),
+        Triple("Usuarios", usuarioCount, Icons.Default.Person)
     )
 
     Column(modifier = Modifier.padding(16.dp)) {

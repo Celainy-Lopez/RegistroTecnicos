@@ -20,6 +20,8 @@ sealed class Screen {
     data object SistemaList: Screen()
     @Serializable
     data object Home: Screen()
+    @Serializable
+    data object UsuarioList: Screen()
 
     @Serializable
     data class Tecnico(val tecnicoId: Int?) : Screen()
@@ -31,4 +33,6 @@ sealed class Screen {
     data class Mensaje(val ticketId: Int?) : Screen()
     @Serializable
     data class Sistema(val sistemaId: Int?) : Screen()
+    @Serializable
+    data class Usuario(val usuarioId: Int?) : Screen()
 }

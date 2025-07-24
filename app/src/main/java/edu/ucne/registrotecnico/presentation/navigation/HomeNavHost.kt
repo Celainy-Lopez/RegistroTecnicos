@@ -20,6 +20,8 @@ import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoListScreen
 import edu.ucne.registrotecnico.presentation.tecnicos.TecnicoScreen
 import edu.ucne.registrotecnico.presentation.tickets.TicketListScreen
 import edu.ucne.registrotecnico.presentation.tickets.TicketScreen
+import edu.ucne.registrotecnico.presentation.usuarios.UsuarioListScreen
+import edu.ucne.registrotecnico.presentation.usuarios.UsuarioScreen
 
 sealed class BottomNavItem(
     val route: String,
@@ -31,6 +33,7 @@ sealed class BottomNavItem(
     object TecnicosList : BottomNavItem("tecnicos", "Técnicos", Icons.Default.People)
     object PrioridadesList : BottomNavItem("prioridades", "Prioridades", Icons.Default.LowPriority)
     object SistemasList: BottomNavItem("sistemas", "Sistemas", Icons.Default.Api)
+    object UsuariosList: BottomNavItem("usuarios", "Usuarios", Icons.Default.Person)
 }
 @Composable
 fun HomeNavHost(
@@ -41,7 +44,8 @@ fun HomeNavHost(
         BottomNavItem.TicketsList,
         BottomNavItem.TecnicosList,
         BottomNavItem.PrioridadesList,
-        BottomNavItem.SistemasList
+        BottomNavItem.SistemasList,
+        BottomNavItem.UsuariosList
     )
 
     Scaffold(
@@ -165,6 +169,24 @@ fun HomeNavHost(
 
             composable <Screen.Sistema>{ backStack ->
                 SistemaScreen (
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
+
+            composable (BottomNavItem.UsuariosList.route) {
+                UsuarioListScreen (
+                    goToUsuario = { id ->
+                        navHostController.navigate(Screen.Usuario(id))
+                    },
+                    createUsuario = {
+                        navHostController.navigate(Screen.Usuario(null))
+                    },
+                    goBack = { navHostController.popBackStack() }
+                )
+            }
+
+            composable <Screen.Usuario>{ backStack ->
+                UsuarioScreen (
                     goBack = { navHostController.popBackStack() }
                 )
             }
