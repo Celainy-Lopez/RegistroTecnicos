@@ -29,39 +29,9 @@ import edu.ucne.registrotecnico.ui.theme.RegistroTecnicoTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var tecnicoDb: TecnicoDb
-    private lateinit var tecnicosRepository: TecnicosRepository
-    private lateinit var tecnicosViewModel: TecnicosViewModel
-
-    private lateinit var prioridadesRepository: PrioridadesRepository
-    private lateinit var prioridadViewModel: PrioridadesViewModel
-
-    private lateinit var ticketsRepository: TicketsRepository
-    private lateinit var ticketsViewModel: TicketsViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        tecnicoDb = Room.databaseBuilder(
-            applicationContext,
-            TecnicoDb::class.java,
-            "Tecnico.db"
-        ).fallbackToDestructiveMigration()
-            .build()
-
-        tecnicosRepository = TecnicosRepository(tecnicoDb.TecnicoDao())
-        tecnicosViewModel = TecnicosViewModel(tecnicosRepository)
-
-        prioridadesRepository = PrioridadesRepository(tecnicoDb.PrioridadDao())
-        prioridadViewModel = PrioridadesViewModel(prioridadesRepository)
-
-        ticketsRepository = TicketsRepository(tecnicoDb.TicketDao())
-        ticketsViewModel = TicketsViewModel(
-            ticketsRepository,
-            tecnicosRepository,
-            prioridadesRepository
-        )
-
         setContent {
             RegistroTecnicoTheme {
                 val nav = rememberNavController()
